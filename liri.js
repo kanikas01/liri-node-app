@@ -1,5 +1,11 @@
 require("dotenv").config();
 var keys = require("./keys.js");
+var fs = require("fs");
+var instructionsFile = 'random.txt';
+var action = process.argv[2];
+var userQuery = process.argv.slice(3).join(' ');
+
+main(action, userQuery);
 
 // concert-this
 // node liri.js concert-this <artist/band name here>
@@ -13,52 +19,78 @@ var keys = require("./keys.js");
 // do-what-it-says
 // node liri.js do-what-it-says
 
-var action = process.argv[2];
 
-switch (action) {
-  case "concert-this":
-    concertThis();
-    break;
-
-  case "spotify-this-song":
-    spotifyThisSong();
-    break;
-
-  case "movie-this":
-    movieThis();
-    break;
-
-  case "do-what-it-says":
-    doWhatItSays();
-    break;
-
-  default:
-    showUsage();
-    break;
-}
 
 
 // ---------- Functions ---------- //
 
-function concertThis() {
+function main(action, userQuery) {
+  switch (action) {
+    case "concert-this":
+      concertThis(userQuery);
+      break;
+
+    case "spotify-this-song":
+      spotifyThisSong(userQuery);
+      break;
+
+    case "movie-this":
+      movieThis(userQuery);
+      break;
+
+    case "do-what-it-says":
+      doWhatItSays();
+      break;
+
+    default:
+      showUsage();
+      break;
+  }
+}
+
+function concertThis(queryString) {
 
 }
 
-function spotifyThisSong() {
+function spotifyThisSong(queryString) {
   var Spotify = require('node-spotify-api');
   var spotify = new Spotify(keys.spotify);
-  
+  if (!queryString) {
+    queryString = 'The Sign';
+  }
+
+  spotify.search({ type: 'track', query: queryString, limit: 10 }, function (err, data) {
+    if (err) {
+      return console.log('Error occurred: ' + err);
+    }
+
+    console.log(JSON.stringify(data, null, 2));
+  });
 
 }
 
-function movieThis() {
+function movieThis(queryString) {
 
 }
 
+// Execute instructions in instructionsFile
 function doWhatItSays() {
+  // Read file content
+  fs.readFile(instructionsFile, "utf8", function (error, data) {
+    if (error) {
+      return console.log(error);
+    }
+    // Parse file content into an array
+    var dataArr = data.split(",");
+
+    // TODO - CHECK FOR INFINITE LOOP
+    // Execute main function using content of instructionsFile
+    main(dataArr[0], dataArr[1]);
+  });
 
 }
 
+// Show script useage
 function showUsage() {
   console.log(`usage: node liri.js concert-this <artist/band name>
        node liri.js spotify-this-song <song name>
