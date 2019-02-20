@@ -1,0 +1,24 @@
+{
+  "name": "liri-node-app",
+  "version": "1.0.0",
+  "description": "LIRI - a command line app used to search Spotify for songs, Bands in Town for concerts, and OMDB for movies.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanikas01/liri-node-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kanikas01/liri-node-app/issues"
+  },
+  "homepage": "https://github.com/kanikas01/liri-node-app#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "node-spotify-api": "^1.0.7"
+  }
+}
