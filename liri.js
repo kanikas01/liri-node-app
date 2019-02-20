@@ -80,14 +80,18 @@ function doWhatItSays() {
     if (error) {
       return console.log(error);
     }
-    // Parse file content into an array
-    var dataArr = data.split(",");
+    // Parse file content into variables
+    var [action, queryString] = data.split(",");
 
-    // TODO - CHECK FOR INFINITE LOOP
-    // Execute main function using content of instructionsFile
-    main(dataArr[0], dataArr[1]);
+    // Abort execution if infinite loop is detected
+    if (action === 'do-what-it-says') {
+      console.log("FATAL: Infinite loop detected - aborting script\n");
+      return;
+    }
+        
+    // Recursively call main function
+    main(action, queryString);
   });
-
 }
 
 // Show script useage
