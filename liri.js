@@ -1,25 +1,15 @@
 require("dotenv").config();
-var keys = require("./keys.js");
+var axios = require("axios");
 var fs = require("fs");
+var keys = require("./keys.js");
+var moment = require('moment');
+var Spotify = require('node-spotify-api');
 var instructionsFile = 'random.txt';
 var action = process.argv[2];
 var userQuery = process.argv.slice(3).join(' ');
 
+// Execute main function
 main(action, userQuery);
-
-// concert-this
-// node liri.js concert-this <artist/band name here>
-
-// spotify-this-song
-// node liri.js spotify-this-song '<song name here>'
-
-// movie-this
-// node liri.js movie-this '<movie name here>'
-
-// do-what-it-says
-// node liri.js do-what-it-says
-
-
 
 
 // ---------- Functions ---------- //
@@ -52,21 +42,28 @@ function concertThis(queryString) {
 
 }
 
+// Query Spotify API for information about a song
 function spotifyThisSong(queryString) {
-  var Spotify = require('node-spotify-api');
   var spotify = new Spotify(keys.spotify);
+  // If no song is given, set song title to "The Sign"
   if (!queryString) {
     queryString = 'The Sign';
   }
 
-  spotify.search({ type: 'track', query: queryString, limit: 10 }, function (err, data) {
-    if (err) {
-      return console.log('Error occurred: ' + err);
-    }
-
-    console.log(JSON.stringify(data, null, 2));
+  // Create Spotify query
+  var spotifyQuery = spotify.search({
+    type: 'track',
+    query: queryString,
+    limit: 10
   });
 
+  // Execute Spotify query
+  spotifyQuery.then(function (data) {
+    console.log(JSON.stringify(data, null, 2));
+  })
+  .catch(function(err) {
+    console.log(err);
+  });
 }
 
 function movieThis(queryString) {
@@ -88,13 +85,13 @@ function doWhatItSays() {
       console.log("FATAL: Infinite loop detected - aborting script\n");
       return;
     }
-        
-    // Recursively call main function
+    
+    // Call main function with new parameters
     main(action, queryString);
   });
 }
 
-// Show script useage
+// Show script usage
 function showUsage() {
   console.log(`usage: node liri.js concert-this <artist/band name>
        node liri.js spotify-this-song <song name>
