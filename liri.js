@@ -53,13 +53,22 @@ function spotifyThisSong(queryString) {
   // Create Spotify query
   var spotifyQuery = spotify.search({
     type: 'track',
-    query: queryString,
-    limit: 10
+    query: queryString
   });
 
   // Execute Spotify query
   spotifyQuery.then(function (data) {
-    console.log(JSON.stringify(data, null, 2));
+    console.log('\n-------------------\n');
+    for (var i = 0; i < data.tracks.items.length; i++) {
+      // If song title is an exact match, print results
+      if (data.tracks.items[i].name.toLowerCase() === queryString.toLowerCase()) {
+        console.log("Artist: " + data.tracks.items[i].artists[0].name);
+        console.log("Song: " + data.tracks.items[i].name);
+        console.log("Link: " + data.tracks.items[i].external_urls.spotify);
+        console.log("Album: " + data.tracks.items[i].album.name);
+        console.log('\n-------------------\n');
+      }
+    }
   })
   .catch(function(err) {
     console.log(err);
@@ -67,12 +76,12 @@ function spotifyThisSong(queryString) {
 }
 
 function movieThis(queryString) {
-
+  // console.log(JSON.stringify(data, null, 2));
 }
 
 // Execute instructions in instructionsFile
 function doWhatItSays() {
-  // Read file content
+  // Read file contents
   fs.readFile(instructionsFile, "utf8", function (error, data) {
     if (error) {
       return console.log(error);
