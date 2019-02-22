@@ -1,3 +1,6 @@
+
+// ---------- Imports and global vars ---------- //
+
 require("dotenv").config();
 var axios = require("axios");
 var fs = require("fs");
@@ -8,33 +11,30 @@ var instructionsFile = 'random.txt';
 var action = process.argv[2];
 var userQuery = process.argv.slice(3).join(' ');
 
-// Execute main function
+
+// ---------- Execute main function ---------- //
+
 main(action, userQuery);
 
 
-// ---------- Functions ---------- //
+// ---------- Function definitions ---------- //
 
 function main(action, userQuery) {
   switch (action) {
     case "concert-this":
       concertThis(userQuery);
       break;
-
     case "spotify-this-song":
       spotifyThisSong(userQuery);
       break;
-
     case "movie-this":
       movieThis(userQuery);
       break;
-
     case "do-what-it-says":
       doWhatItSays();
       break;
-
     default:
       showUsage();
-      break;
   }
 }
 
@@ -64,7 +64,7 @@ function spotifyThisSong(queryString) {
       if (data.tracks.items[i].name.toLowerCase() === queryString.toLowerCase()) {
         console.log("Artist: " + data.tracks.items[i].artists[0].name);
         console.log("Song: " + data.tracks.items[i].name);
-        console.log("Link: " + data.tracks.items[i].external_urls.spotify);
+        console.log("Preview: " + data.tracks.items[i].external_urls.spotify);
         console.log("Album: " + data.tracks.items[i].album.name);
         console.log('\n-------------------\n');
       }
@@ -86,8 +86,10 @@ function doWhatItSays() {
     if (error) {
       return console.log(error);
     }
+
     // Parse file content into variables
     var [action, queryString] = data.split(",");
+    queryString = queryString.replace(/"/g, '').trim();
 
     // Abort execution if infinite loop is detected
     if (action === 'do-what-it-says') {
