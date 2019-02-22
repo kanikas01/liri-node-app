@@ -8,18 +8,21 @@ var keys = require("./keys.js");
 var moment = require('moment');
 var Spotify = require('node-spotify-api');
 var instructionsFile = 'random.txt';
+var logFile = 'log.txt';
 var action = process.argv[2];
 var userQuery = process.argv.slice(3).join(' ');
-
 
 // ---------- Execute main function ---------- //
 
 main(action, userQuery);
 
-
 // ---------- Function definitions ---------- //
 
 function main(action, userQuery) {
+  // Write user request to log file
+  logCommand(action, userQuery);
+
+  // Execute user request
   switch (action) {
     case "concert-this":
       concertThis(userQuery);
@@ -38,7 +41,7 @@ function main(action, userQuery) {
   }
 }
 
-// Query Bands In Town API for upcoming concert info
+// Query Bands In Town API for upcoming concert info and output results
 function concertThis(queryString) {
   // Set query string
   var query = "https://rest.bandsintown.com/artists/" + queryString + "/events?app_id=codingbootcamp";
@@ -76,7 +79,7 @@ function concertThis(queryString) {
     });
 }
 
-// Query Spotify API for information about a song
+// Query Spotify API for information about a song and output results
 function spotifyThisSong(queryString) {
   var spotify = new Spotify(keys.spotify);
   // If no song is given, set song title to "The Sign"
@@ -118,6 +121,7 @@ function spotifyThisSong(queryString) {
   });
 }
 
+// Query OMDB API for info about a movie title and output results
 function movieThis(queryString) {
   // If no movie is given, set movie title to "Mr Nobody"
   if (!queryString) {
@@ -163,8 +167,6 @@ function movieThis(queryString) {
     .catch(function (error) {
       console.log(error);
     });
-
-  
 }
 
 // Execute instructions in instructionsFile
@@ -196,4 +198,17 @@ function showUsage() {
        node liri.js spotify-this-song <song name>
        node liri.js movie-this <movie name>
        node liri.js do-what-it-says`);
+}
+
+// Write user request to log file
+function logCommand(action, userQuery) {
+  if (action) {
+    var request = action + ',"' + userQuery + '"\n';
+    fs.appendFile(logFile, request, function (err) {
+      // Log any errors to console
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
 }
