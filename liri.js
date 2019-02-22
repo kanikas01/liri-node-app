@@ -38,6 +38,7 @@ function main(action, userQuery) {
   }
 }
 
+// Query Bands In Town API for upcoming concert info
 function concertThis(queryString) {
   // Set query string
   var query = "https://rest.bandsintown.com/artists/" + queryString + "/events?app_id=codingbootcamp";
@@ -45,27 +46,28 @@ function concertThis(queryString) {
   // Run get request
   axios.get(query)
     .then(function (response) {
-      var venue, city, region, country, location, date;
+      
       console.log('\n-------------------\n');
       for (var i = 0; i < response.data.length; i++) {
-        // Assign json values to variables
-        venue = response.data[i].venue.name;
-        city = response.data[i].venue.city;
-        region = response.data[i].venue.region;
-        country = response.data[i].venue.country;
-        date = response.data[i].datetime.split('T');
+        // Parse JSON into concert object properties
+        var concert = {};
+        concert.venue = response.data[i].venue.name;
+        concert.city = response.data[i].venue.city;
+        concert.region = response.data[i].venue.region;
+        concert.country = response.data[i].venue.country;
+        concert.date = response.data[i].datetime.split('T');
 
-        // Set location 
-        if (region) {
-          location = city + ', ' + region + ', ' + country;
+        // Not all concerts have a region associated with them, so set location as appropriate 
+        if (concert.region) {
+          concert.location = concert.city + ', ' + concert.region + ', ' + cconcert.ountry;
         } else {
-          location = city + ', ' + country;
+          concert.location = concert.city + ', ' + concert.country;
         }
 
         // Print output
-        console.log("Venue: " + venue);
-        console.log("Location: " + location);
-        console.log("Date: " + moment(date[0], 'YYYY-MM-DD').format('MM/DD/YYYY'));
+        console.log("Venue: " + concert.venue);
+        console.log("Location: " + concert.location);
+        console.log("Date: " + moment(concert.date[0], 'YYYY-MM-DD').format('MM/DD/YYYY'));
         console.log('\n-------------------\n');
       }
     })
@@ -90,22 +92,23 @@ function spotifyThisSong(queryString) {
 
   // Execute Spotify query
   spotifyQuery.then(function (data) {
-    var artist, song, preview, album;
+    
     console.log('\n-------------------\n');
     for (var i = 0; i < data.tracks.items.length; i++) {
-      // If song title is an exact match, print results
+      // Only print results if song title is an exact match
       if (data.tracks.items[i].name.toLowerCase() === queryString.toLowerCase()) {
-        // Assign json values to variables
-        artist = data.tracks.items[i].artists[0].name;
-        song = data.tracks.items[i].name;
-        preview = data.tracks.items[i].external_urls.spotify;
-        album = data.tracks.items[i].album.name;
+        // Parse JSON into song object properties
+        var song = {};
+        song.artist = data.tracks.items[i].artists[0].name;
+        song.title = data.tracks.items[i].name;
+        song.preview = data.tracks.items[i].external_urls.spotify;
+        song.album = data.tracks.items[i].album.name;
 
         // Print output
-        console.log("Artist: " + artist);
-        console.log("Song: " + song);
-        console.log("Preview: " + preview);
-        console.log("Album: " + album);
+        console.log("Artist: " + song.artist);
+        console.log("Title: " + song.title);
+        console.log("Preview: " + song.preview);
+        console.log("Album: " + song.album);
         console.log('\n-------------------\n');
       }
     }
@@ -116,11 +119,52 @@ function spotifyThisSong(queryString) {
 }
 
 function movieThis(queryString) {
-  // console.log(JSON.stringify(data, null, 2));
-  
-  // Set query string
+  // If no movie is given, set movie title to "Mr Nobody"
+  if (!queryString) {
+    queryString = 'Mr Nobody';
+  }
+
+  // Create OMDB query
+  var query = "http://www.omdbapi.com/?apikey=trilogy&t=" + queryString;
+
   // Run get request
-  // Print output
+  axios.get(query)
+    .then(function (response) {
+      // Parse JSON into movie object properties
+      var movie = {}; 
+      movie.title = response.data.Title;
+      movie.year = response.data.Year;
+      movie.imdbRating = response.data.imdbRating;
+      movie.country = response.data.Country;
+      movie.language = response.data.Language;
+      movie.plot = response.data.Plot;
+      movie.actors = response.data.Actors;
+      
+      // Not all films have a Rotten Tomatoes rating, so set Rotten Tomatoes rating as appropriate
+      movie.rottenTomatoesRating = 'None';
+      response.data.Ratings.forEach(element => {
+        if (element.Source == 'Rotten Tomatoes') {
+          movie.rottenTomatoesRating = element.Value;
+        }
+      });
+
+      // Print output
+      console.log('\n-------------------\n');
+      console.log("Title: " + movie.title);
+      console.log("Year: " + movie.year);
+      console.log("IMDB Rating: " + movie.imdbRating);
+      console.log("Rotten Tomatoes Rating: " + movie.rottenTomatoesRating);
+      console.log("Country: " + movie.country);
+      console.log("Language: " + movie.language);
+      console.log("Plot: " + movie.plot);
+      console.log("Actors: " + movie.actors);
+      console.log('\n-------------------\n');
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  
 }
 
 // Execute instructions in instructionsFile
