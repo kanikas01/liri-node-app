@@ -49,30 +49,35 @@ function concertThis(queryString) {
   // Run get request
   axios.get(query)
     .then(function (response) {
-      
-      console.log('\n-------------------\n');
-      for (var i = 0; i < response.data.length; i++) {
-        // Parse JSON into concert object properties
-        var concert = {};
-        concert.venue = response.data[i].venue.name;
-        concert.city = response.data[i].venue.city;
-        concert.region = response.data[i].venue.region;
-        concert.country = response.data[i].venue.country;
-        concert.date = response.data[i].datetime.split('T');
-
-        // Not all concerts have a region associated with them, so set location as appropriate 
-        if (concert.region) {
-          concert.location = concert.city + ', ' + concert.region + ', ' + cconcert.ountry;
-        } else {
-          concert.location = concert.city + ', ' + concert.country;
-        }
-
-        // Print output
-        console.log("Venue: " + concert.venue);
-        console.log("Location: " + concert.location);
-        console.log("Date: " + moment(concert.date[0], 'YYYY-MM-DD').format('MM/DD/YYYY'));
+      // Check to see if the artist in question has any upcoming shows
+      if (response.data.length > 0) {
         console.log('\n-------------------\n');
-      }
+        for (var i = 0; i < response.data.length; i++) {
+          // Parse JSON into concert object properties
+          var concert = {};
+          concert.venue = response.data[i].venue.name;
+          concert.city = response.data[i].venue.city;
+          concert.region = response.data[i].venue.region;
+          concert.country = response.data[i].venue.country;
+          concert.date = response.data[i].datetime.split('T');
+
+          // Not all concerts have a region associated with them, so set location as appropriate 
+          if (concert.region) {
+            concert.location = concert.city + ', ' + concert.region + ', ' + concert.country;
+          } else {
+            concert.location = concert.city + ', ' + concert.country;
+          }
+
+          // Print output
+          console.log("Venue: " + concert.venue);
+          console.log("Location: " + concert.location);
+          console.log("Date: " + moment(concert.date[0], 'YYYY-MM-DD').format('MM/DD/YYYY'));
+          console.log('\n-------------------\n');
+        }
+      } else {
+          // Alert user if song is not found
+          console.log("No upcoming concerts found for that artist.");
+        }
     })
     .catch(function (error) {
       console.log(error);
@@ -95,25 +100,30 @@ function spotifyThisSong(queryString) {
 
   // Execute Spotify query
   spotifyQuery.then(function (data) {
-    
-    console.log('\n-------------------\n');
-    for (var i = 0; i < data.tracks.items.length; i++) {
-      // Only print results if song title is an exact match
-      if (data.tracks.items[i].name.toLowerCase() === queryString.toLowerCase()) {
-        // Parse JSON into song object properties
-        var song = {};
-        song.artist = data.tracks.items[i].artists[0].name;
-        song.title = data.tracks.items[i].name;
-        song.preview = data.tracks.items[i].external_urls.spotify;
-        song.album = data.tracks.items[i].album.name;
+    // Check to see if a song exists with the given title
+    if (data.tracks.items.length > 0) {
+      console.log('\n-------------------\n');
+      for (var i = 0; i < data.tracks.items.length; i++) {
+        // Only print results if song title is an exact match
+        if (data.tracks.items[i].name.toLowerCase() === queryString.toLowerCase()) {
+          // Parse JSON into song object properties
+          var song = {};
+          song.artist = data.tracks.items[i].artists[0].name;
+          song.title = data.tracks.items[i].name;
+          song.preview = data.tracks.items[i].external_urls.spotify;
+          song.album = data.tracks.items[i].album.name;
 
-        // Print output
-        console.log("Artist: " + song.artist);
-        console.log("Title: " + song.title);
-        console.log("Preview: " + song.preview);
-        console.log("Album: " + song.album);
-        console.log('\n-------------------\n');
+          // Print output
+          console.log("Artist: " + song.artist);
+          console.log("Title: " + song.title);
+          console.log("Preview: " + song.preview);
+          console.log("Album: " + song.album);
+          console.log('\n-------------------\n');
+        }
       }
+    } else {
+      // Alert user if song is not found
+      console.log("No song found with that title.");
     }
   })
   .catch(function(err) {
@@ -127,42 +137,48 @@ function movieThis(queryString) {
   if (!queryString) {
     queryString = 'Mr Nobody';
   }
-
+  
   // Create OMDB query
   var query = "http://www.omdbapi.com/?apikey=trilogy&t=" + queryString;
 
   // Run get request
   axios.get(query)
     .then(function (response) {
-      // Parse JSON into movie object properties
-      var movie = {}; 
-      movie.title = response.data.Title;
-      movie.year = response.data.Year;
-      movie.imdbRating = response.data.imdbRating;
-      movie.country = response.data.Country;
-      movie.language = response.data.Language;
-      movie.plot = response.data.Plot;
-      movie.actors = response.data.Actors;
-      
-      // Not all films have a Rotten Tomatoes rating, so set Rotten Tomatoes rating as appropriate
-      movie.rottenTomatoesRating = 'None';
-      response.data.Ratings.forEach(element => {
-        if (element.Source == 'Rotten Tomatoes') {
-          movie.rottenTomatoesRating = element.Value;
-        }
-      });
+      // Check to see if movie exists
+      if (response.data.Title) {
+        // Parse JSON into movie object properties
+        var movie = {}; 
+        movie.title = response.data.Title;
+        movie.year = response.data.Year;
+        movie.imdbRating = response.data.imdbRating;
+        movie.country = response.data.Country;
+        movie.language = response.data.Language;
+        movie.plot = response.data.Plot;
+        movie.actors = response.data.Actors;
+        
+        // Not all films have a Rotten Tomatoes rating, so set Rotten Tomatoes rating as appropriate
+        movie.rottenTomatoesRating = 'None';
+          response.data.Ratings.forEach(element => {
+            if (element.Source == 'Rotten Tomatoes') {
+              movie.rottenTomatoesRating = element.Value;
+            }
+          });
 
-      // Print output
-      console.log('\n-------------------\n');
-      console.log("Title: " + movie.title);
-      console.log("Year: " + movie.year);
-      console.log("IMDB Rating: " + movie.imdbRating);
-      console.log("Rotten Tomatoes Rating: " + movie.rottenTomatoesRating);
-      console.log("Country: " + movie.country);
-      console.log("Language: " + movie.language);
-      console.log("Plot: " + movie.plot);
-      console.log("Actors: " + movie.actors);
-      console.log('\n-------------------\n');
+        // Print output
+        console.log('\n-------------------\n');
+        console.log("Title: " + movie.title);
+        console.log("Year: " + movie.year);
+        console.log("IMDB Rating: " + movie.imdbRating);
+        console.log("Rotten Tomatoes Rating: " + movie.rottenTomatoesRating);
+        console.log("Country: " + movie.country);
+        console.log("Language: " + movie.language);
+        console.log("Plot: " + movie.plot);
+        console.log("Actors: " + movie.actors);
+        console.log('\n-------------------\n');
+      } else {
+        // Alert user if movie is not found
+        console.log("No film found with that title.");
+      }
     })
     .catch(function (error) {
       console.log(error);
