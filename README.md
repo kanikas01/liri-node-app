@@ -1,6 +1,8 @@
 # LIRI
 
-LIRI is a node-based command line app used to search Spotify for songs, Bands in Town for concerts, and OMDB for movies.  Here is a brief [video walkthrough](https://drive.google.com/open?id=1KspaEDqK7ddoDYIkwo48C4BxMVHr_MAa) describing how to use the app. Basic usage is as follows:
+LIRI is a node-based command line app used to search Spotify for songs, Bands in Town for concerts, and OMDB for movies. The app itself is written entirely in JavaScript. Here is a brief [video walkthrough](https://drive.google.com/open?id=1KspaEDqK7ddoDYIkwo48C4BxMVHr_MAa) describing its use. 
+
+Basic usage is as follows:
 
 *Use the "Bands in Town" API to search for concerts*  
 node liri.js concert-this &lt;artist/band name&gt;   
