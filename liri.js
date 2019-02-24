@@ -77,10 +77,10 @@ function concertThis(queryString) {
       } else {
           // Alert user if song is not found
           console.log("No upcoming concerts found for that artist.");
-        }
+      }
     })
     .catch(function (error) {
-      console.log(error);
+      console.log("No upcoming concerts found for that artist.");
     });
 }
 
@@ -193,7 +193,7 @@ function doWhatItSays() {
       return console.log(error);
     }
 
-    // Parse file content into variables
+    // Parse file content into variables, removing double quotes and whitespace
     var [fileAction, fileQueryString] = data.split(",");
     fileQueryString = fileQueryString.replace(/"/g, '').trim();
 
