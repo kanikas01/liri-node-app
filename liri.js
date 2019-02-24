@@ -43,6 +43,10 @@ function main(action, userQuery) {
 
 // Query Bands In Town API for upcoming concert info and output results
 function concertThis(queryString) {
+  if(!queryString) {
+    console.log("No query provided - please enter the name of an artist or group.");
+    return;
+  }
   // Set query string
   var query = "https://rest.bandsintown.com/artists/" + queryString + "/events?app_id=codingbootcamp";
 
