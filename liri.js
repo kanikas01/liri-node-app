@@ -48,7 +48,7 @@ function concertThis(queryString) {
     return;
   }
   // Set query string
-  var query = "https://rest.bandsintown.com/artists/" + queryString + "/events?app_id=codingbootcamp";
+  var query = "https://rest.bandsintown.com/artists/" + queryString + "/events?app_id=" + keys.bandsInTown.id;
 
   // Run get request
   axios.get(query)
@@ -143,7 +143,7 @@ function movieThis(queryString) {
   }
   
   // Create OMDB query
-  var query = "http://www.omdbapi.com/?apikey=trilogy&t=" + queryString;
+  var query = "http://www.omdbapi.com/?apikey=" + keys.omdb.key + "&t=" + queryString;
 
   // Run get request
   axios.get(query)
